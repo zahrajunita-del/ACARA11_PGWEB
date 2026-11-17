@@ -1,0 +1,93 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebGIS Kulon Progo</title>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        #map {
+            width: 100%;
+            height: 100vh;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="map"></div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <script>
+
+        // Membuat peta
+        var map = L.map('map');
+
+        // Basemap OpenStreetMap
+        var osm = L.tileLayer(
+            'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+            {
+                attribution: '© OpenStreetMap'
+            }
+        ).addTo(map);
+
+        // Layer administrasi kecamatan
+        var kecamatan = L.tileLayer.wms(
+            'http://localhost:8080/geoserver/pgweb/wms',
+            {
+                layers: 'pgweb:KulonProgo_Admin_Kec',
+                format: 'image/png',
+                transparent: true,
+                version: '1.1.0'
+            }
+        ).addTo(map);
+
+        // Layer jaringan jalan
+        var jalan = L.tileLayer.wms(
+            'http://localhost:8080/geoserver/pgweb2/wms',
+            {
+                layers: 'pgweb2:Jalan_KP',
+                format: 'image/png',
+                transparent: true,
+                version: '1.1.0'
+            }
+        ).addTo(map);
+
+        // Mengatur batas tampilan wilayah Kulon Progo
+        var bounds = L.latLngBounds(
+            [-7.982776, 110.003312],
+            [-7.641674, 110.274568]
+        );
+
+        map.fitBounds(bounds);
+
+        // Pengaturan basemap
+        var baseMaps = {
+            "OpenStreetMap": osm
+        };
+
+        // Pengaturan overlay
+        var overlayMaps = {
+            "Administrasi Kecamatan": kecamatan,
+            "Jaringan Jalan": jalan
+        };
+
+        // Menampilkan kontrol layer
+        L.control.layers(
+            baseMaps,
+            overlayMaps
+        ).addTo(map);
+
+    </script>
+
+</body>
+</html>
